@@ -1,0 +1,13 @@
+# Eclipse
+.classpath
+.project
+.pydevproject
+.settings
+bin/
+
+# Gradle
+.gradle/
+build/
+
+# signal4j
+store.json

@@ -1,0 +1,22 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile 'com.github.turakar:signal4j:1.0.2'
+    compile 'org.python:jython-standalone:2.7.0'
+}
+
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'signal-bot',
+        	'Implementation-Version': '0.0.1',
+        	'Main-Class': 'de.nerdclubtfg.signalbot.SignalBot'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
