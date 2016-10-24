@@ -77,13 +77,12 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 
 	private void loadConfig() throws IOException {
 		File configFile = new File(CONFIG_PATH);
-		if(configFile.exists()) {
-			ObjectMapper mapper = new ObjectMapper();
-			config = mapper.readValue(configFile, Config.class);
-		} else {
+		if(!configFile.exists()) {
 			Files.copy(SignalBot.class.getResourceAsStream("defaultConfig.json"), configFile.toPath(), 
 					StandardCopyOption.REPLACE_EXISTING);
 		}
+		ObjectMapper mapper = new ObjectMapper();
+		config = mapper.readValue(configFile, Config.class);
 	}
 	
 	private void saveConfig() throws IOException {
