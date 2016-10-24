@@ -11,3 +11,7 @@ build/
 
 # signal4j
 store.json
+
+# Dolphin
+.directory
+
