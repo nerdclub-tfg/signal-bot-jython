@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.python.util.PythonInterpreter;
@@ -66,6 +67,7 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 			return;
 		}
 		SignalInterface.set(signal, config, this);
+		System.out.println("Running");
 		try {
 			while(true) {
 				signal.pull(60 * 1000);
@@ -96,18 +98,39 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 		signal.addSecurityExceptionListener(this);
 		if(!signal.isRegistered()) {
 			Scanner scanner = new Scanner(System.in);
-			System.out.println("Url (or production or staging for whispersystems' server):");
+			System.out.println("Url (or 'production' or 'staging' for whispersystems' server):");
 			String url = scanner.nextLine();
 			url = url.replace("production", "https://textsecure-service.whispersystems.org");
 			url = url.replace("staging", "https://textsecure-service-staging.whispersystems.org");
 			System.out.println("Phone Number:");
 			String phoneNumber = scanner.nextLine();
-			signal.startConnectAsPrimary(url, USER_AGENT, phoneNumber, false);
+			System.out.println("Device type, one of 'primary' (new registration) or 'secondary' (linking):");
+			String deviceType = scanner.nextLine();
 			
-			System.out.println("Verification code: ");
-			String code = scanner.nextLine();
+			if(deviceType.equals("primary")) {
+				signal.startConnectAsPrimary(url, USER_AGENT, phoneNumber, false);
+				System.out.println("Verification code: ");
+				String code = scanner.nextLine();
+				code = code.replace("-", "");
+				signal.finishConnectAsPrimary(code);
+			} else if(deviceType.equals("secondary")) {
+				try {
+					String uuid = signal.startConnectAsSecondary(url, USER_AGENT, phoneNumber);
+					System.out.println("Scan this uuid as a QR code, e.g. using an online qr code generator "
+							+ "(The url does not contain sensitive information):");
+					System.out.println(uuid);
+					signal.finishConnectAsSecondary(USER_AGENT, false);
+					signal.requestSync();
+				} catch (TimeoutException e) {
+					scanner.close();
+					throw new IOException(e);
+				}
+			} else {
+				scanner.close();
+				throw new IOException("Invalid option!");
+			}
 			scanner.close();
-			signal.finishConnectAsPrimary(code);
+			System.out.println("Registered!");
 		}
 		preKeysTimer = new Timer(true);
 		preKeysTimer.schedule(new TimerTask() {
