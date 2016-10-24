@@ -1,7 +1,6 @@
-from de.nerdclubtfg.signalbot import SignalBot
+from de.nerdclubtfg.signalbot import SignalInterface as signal
 
 def onMessage(sender, message, group):
-    print sender.getNumber()
-    print message.getBody()
-    if group != None:
-        print group.getName()
+    if(message.getBody != None):
+        signal.sendMessage(sender, message.getBody().get())
+    
