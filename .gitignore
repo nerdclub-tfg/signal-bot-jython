@@ -15,3 +15,5 @@ store.json
 # Dolphin
 .directory
 
+# signal-bot (the project itself)
+config.json
