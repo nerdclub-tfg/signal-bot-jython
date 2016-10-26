@@ -146,27 +146,31 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 	}
 
 	private void loadPlugins() throws IOException {
-		plugins = getResourceFiles("/plugins").stream()
+		plugins = getResourceFiles("/signalbot/plugins").stream()
 				.map(v -> v.substring(0, v.length() - 3))
 				.filter(v -> !v.equals("__init__"))
 				.collect(Collectors.toList());
-		plugins.stream().forEach(v -> {
-			python.set("enabled_" + v, config.isEnabled(v));
-		});
 		StringBuilder sb = new StringBuilder();
 		for(String plugin : plugins) {
-			sb.append("from plugins import " + plugin + "\n");
+			sb.append("from signalbot.plugins." + plugin + " import " + firstUpperCase(plugin) + "\n");
 		}
-		sb.append("def onMessage(sender, message, group):\n");
+		sb.append("from signalbot import bot\n");
 		for(String plugin : plugins) {
-			sb.append("  if enabled_" + plugin + ":\n");
-			sb.append("    " + plugin + ".onMessage(sender, message, group)\n");
+			sb.append("bot.plugins.append(" + firstUpperCase(plugin) + "(");
+			if(config.isEnabled(plugin)) {
+				sb.append("True");
+			} else {
+				sb.append("False");
+			}
+			sb.append("))\n");
 		}
 		python.exec(sb.toString());
 	}
 	
 	public void setEnabled(String plugin, boolean enabled) {
-		python.set("enabled_" + plugin, enabled);
+		python.exec("from signalbot import bot\n"
+				+ "next(v for v in bot.plugins if type(v).__name__ == '" + firstUpperCase(plugin) + "')"
+						+ ".setEnabled(" + enabled + ")\n");
 		config.setEnabled(plugin, enabled);
 		try {
 			saveConfig();
@@ -187,7 +191,8 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 		python.set("paramSender", sender);
 		python.set("paramMessage", message);
 		python.set("paramGroup", group);
-		python.exec("onMessage(paramSender, paramMessage, paramGroup)");
+		python.exec("from signalbot import bot\n"
+				+ "bot.onMessage(paramSender, paramMessage, paramGroup)");
 	}
 
 	private List<String> getResourceFiles(String path) throws IOException {
@@ -205,6 +210,10 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 		return filenames;
 	}
 
+	private String firstUpperCase(String s) {
+		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+	}
+	
 	@Override
 	public void onContactUpdate(User contact) {
 		// ignore
