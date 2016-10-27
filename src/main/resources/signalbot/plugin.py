@@ -1,4 +1,4 @@
-class Plugin:
+class Plugin(object):
 
     def __init__(self, enabled):
         self.enabled = enabled

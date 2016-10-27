@@ -20,6 +20,7 @@ import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
 import org.whispersystems.signalservice.api.messages.multidevice.ReadMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.thoffbauer.signal4j.SignalService;
 import de.thoffbauer.signal4j.listener.ConversationListener;
@@ -89,6 +90,7 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 	
 	private void saveConfig() throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.writeValue(new File(CONFIG_PATH), config);
 	}
 
@@ -170,7 +172,7 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 	public void setEnabled(String plugin, boolean enabled) {
 		python.exec("from signalbot import bot\n"
 				+ "next(v for v in bot.plugins if type(v).__name__ == '" + firstUpperCase(plugin) + "')"
-						+ ".setEnabled(" + enabled + ")\n");
+						+ ".setEnabled(" + (enabled ? "True" : "False") + ")\n");
 		config.setEnabled(plugin, enabled);
 		try {
 			saveConfig();

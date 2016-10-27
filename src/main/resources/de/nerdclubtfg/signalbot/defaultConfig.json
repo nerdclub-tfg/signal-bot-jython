@@ -1,6 +1,7 @@
 {
   "plugins": {
-    "echo": true
+    "echo": true,
+    "plugins": true
   },
   "sudoers": [
   ]
