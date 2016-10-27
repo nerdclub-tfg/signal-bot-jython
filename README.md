@@ -16,6 +16,8 @@ And follow the instructions for registration.
 If possible you should use the staging server for all testing of new plugins and especially for testing of changes to the way
 the bot interacts with Signal to prevent problems with your existing installation. However the bot can be run on both servers 
 (or your own server, if you got it working).
+#### Development Environment
+I'm using Eclipse with the gradle plugin preinstalled. For testing you can register the bot as a secondary device to your android client or install it using a different number.
 
 ### Configuration
 The bot loads a default configuration at startup and copies it to `config.json`. You can edit this file if the bot is not running.
