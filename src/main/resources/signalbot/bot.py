@@ -1,4 +1,4 @@
-import signalbot.plugin
+from signalbot.plugin import Plugin
 
 plugins = []
 

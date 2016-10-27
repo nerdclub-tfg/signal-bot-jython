@@ -1,15 +1,11 @@
 from de.nerdclubtfg.signalbot import SignalInterface as signal
-from signalbot.plugin import Plugin
+from signalbot.patternplugin import PatternPlugin
 
-import re
-
-class Echo(Plugin):
+class Echo(PatternPlugin):
     
-    pattern = re.compile('^!echo .*')
+    def __init__(self, enabled):
+        PatternPlugin.__init__(self, enabled, '^!echo .*')
     
     def onMessage(self, sender, message, group):
         if message.getBody().isPresent():
             signal.sendMessage(sender, message.getBody().get()[6:])
-    
-    def accepts(self, sender, message, group):
-        return message.getBody().isPresent() and self.pattern.match(message.getBody().get())
