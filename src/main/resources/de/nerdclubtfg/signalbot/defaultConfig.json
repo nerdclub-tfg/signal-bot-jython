@@ -1,7 +1,8 @@
 {
   "plugins": {
     "echo": true,
-    "plugins": true
+    "plugins": true,
+    "segelflugwetter": true
   },
   "sudoers": [
   ]
