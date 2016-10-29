@@ -16,7 +16,7 @@ def onMessage(sender, message, group):
     print('[%s] %s%s: \"%s\" forwarded to %s' % (
                         timestampToString(message.getTimestamp()),
                         sender.getNumber(), 
-                        ('in group %s' % group.getName()) if group != None else '', 
+                        (' in group %s' % group.getName()) if group != None else '', 
                         message.getBody().get() if message.getBody().isPresent() else 'no body', 
                         called))
 
