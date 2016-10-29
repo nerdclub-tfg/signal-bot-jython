@@ -7,4 +7,4 @@ class Echo(PatternPlugin):
         PatternPlugin.__init__(self, enabled, '^!echo .*')
     
     def onMessage(self, sender, message, group):
-        signal.sendMessage(sender, message.getBody().get()[6:])
+        signal.sendMessage(sender, group, message.getBody().get()[6:])

@@ -16,7 +16,7 @@ class Segelflugwetter(PatternPlugin):
         body = message.getBody().get()[17:].lower()
         html = None
         if body not in ['eddh', 'eddv', 'eddi', 'eddp', 'eddl', 'edds', 'eddf', 'eddm']:
-            signal.sendMessage(sender, 'Fehler: Flughafen publiziert keinen Segelflugwetterbericht! (ICAO Code angeben)')
+            signal.sendMessage(sender, group, 'Fehler: Flughafen publiziert keinen Segelflugwetterbericht! (ICAO Code angeben)')
             return
         try:
             req = urllib2.Request(
@@ -26,10 +26,10 @@ class Segelflugwetter(PatternPlugin):
             queryStart = '<article class=\"article-full\" role=\"article\"><div class=\"body-text\"><pre>'
             queryEnd = '</pre></div></article>'
             text = html[html.find(queryStart) + len(queryStart) : html.find(queryEnd)]
-            signal.sendMessage(sender, jString(text, 'utf-8'))
+            signal.sendMessage(sender, group, jString(text, 'utf-8'))
         except UnicodeEncodeError:
-            signal.sendMessage(sender, 'Fehler: Flughafenname enthält Umlaute!')
+            signal.sendMessage(sender, group, jString('Fehler: Flughafenname enthält Umlaute!', 'utf-8'))
         except urllib2.URLError as e:
-            signal.sendMessage(sender, 'Fehler: %s' % e.reason)
+            signal.sendMessage(sender, group, 'Fehler: %s' % e.reason)
         except urllib2.HTTPError as e:
-            signal.sendMessage(sender, 'Fehler: %s' % e.code)
+            signal.sendMessage(sender, group, 'Fehler: %s' % e.code)

@@ -11,7 +11,7 @@ def onMessage(sender, message, group):
                 called.append(type(plugin).__name__)
                 plugin.onMessage(sender, message, group)
         except Exception as e:
-            signal.sendMessage(sender, 'Error: %s' % type(e).__name__)
+            signal.sendMessage(sender, group, 'Error: %s' % type(e).__name__)
     
     print('[%s] %s%s: \"%s\" forwarded to %s' % (
                         timestampToString(message.getTimestamp()),

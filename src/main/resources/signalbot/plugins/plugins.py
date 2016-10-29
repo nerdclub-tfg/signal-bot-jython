@@ -15,23 +15,23 @@ class Plugins(PatternPlugin):
                 name = body[7:]
                 if name in names:
                     signal.setEnabled(name, True)
-                    signal.sendMessage(sender, 'Enabled')
+                    signal.sendMessage(sender, group, 'Enabled')
                 else:
-                    signal.sendMessage(sender, 'Plugin not installed!')
+                    signal.sendMessage(sender, group, 'Plugin not installed!')
             else:
-                signal.sendMessage(sender, 'This command requires sudo!')
+                signal.sendMessage(sender, group, 'This command requires sudo!')
         elif body.startswith('disable'):
             if signal.isSudo(sender):
                 name = body[8:]
                 if name in names:
                     signal.setEnabled(name, False)
-                    signal.sendMessage(sender, 'Disabled')
+                    signal.sendMessage(sender, group, 'Disabled')
                 else:
-                    signal.sendMessage(sender, 'Plugin not installed!')
+                    signal.sendMessage(sender, group, 'Plugin not installed!')
             else:
-                signal.sendMessage(sender, 'This command requires sudo!')
+                signal.sendMessage(sender, group, 'This command requires sudo!')
         elif len(body) > 0:
-            signal.sendMessage(sender, 'Unknown command!')
+            signal.sendMessage(sender, group, 'Unknown command!')
         else:
             s = 'Plugins:\n'
             for name in names:
@@ -41,6 +41,6 @@ class Plugins(PatternPlugin):
                 else:
                     s += u'\u274C' # cross
                 s += '\n'
-            signal.sendMessage(sender, s)
+            signal.sendMessage(sender, group, s)
 
         
