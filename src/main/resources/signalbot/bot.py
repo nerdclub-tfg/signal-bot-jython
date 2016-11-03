@@ -12,13 +12,15 @@ def onMessage(sender, message, group):
                 plugin.onMessage(sender, message, group)
         except Exception as e:
             signal.sendMessage(sender, group, 'Error: %s' % type(e).__name__)
+            print('Unexpected error:\n%s' % e)
     
-    print('[%s] %s%s: \"%s\" forwarded to %s' % (
-                        timestampToString(message.getTimestamp()),
-                        sender.getNumber(), 
-                        (' in group %s' % group.getName()) if group != None else '', 
-                        message.getBody().get() if message.getBody().isPresent() else 'no body', 
-                        called))
+    if(len(called) > 0):
+        print('[%s] %s%s: \"%s\" forwarded to %s' % (
+                            timestampToString(message.getTimestamp()),
+                            sender.getNumber(), 
+                            (' in group %s' % group.getName()) if group != None else '', 
+                            message.getBody().get() if message.getBody().isPresent() else 'no body', 
+                            called))
 
 def timestampToString(timestamp):
     return datetime.fromtimestamp(timestamp / 1000).strftime('%Y-%m-%d %H:%M:%S')
