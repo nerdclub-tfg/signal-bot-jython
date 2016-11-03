@@ -2,7 +2,8 @@
   "plugins": {
     "echo": true,
     "plugins": true,
-    "segelflugwetter": true
+    "segelflugwetter": true,
+    "fefe": true
   },
   "sudoers": [
   ]
