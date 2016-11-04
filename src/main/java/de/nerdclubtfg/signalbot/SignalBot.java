@@ -1,9 +1,6 @@
 package de.nerdclubtfg.signalbot;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
@@ -16,9 +13,6 @@ import org.python.util.PythonInterpreter;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
 import org.whispersystems.signalservice.api.messages.multidevice.ReadMessage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import de.thoffbauer.signal4j.SignalService;
 import de.thoffbauer.signal4j.listener.ConversationListener;
 import de.thoffbauer.signal4j.listener.SecurityExceptionListener;
@@ -28,7 +22,6 @@ import de.thoffbauer.signal4j.store.User;
 public class SignalBot implements ConversationListener, SecurityExceptionListener {
 
 	private static final String USER_AGENT = "signal-bot";
-	private static final String CONFIG_PATH = "config.json";
 
 	private Config config;
 	
