@@ -1,9 +1,6 @@
 package de.nerdclubtfg.signalbot;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
@@ -16,9 +13,6 @@ import org.python.util.PythonInterpreter;
 import org.whispersystems.signalservice.api.messages.SignalServiceDataMessage;
 import org.whispersystems.signalservice.api.messages.multidevice.ReadMessage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import de.thoffbauer.signal4j.SignalService;
 import de.thoffbauer.signal4j.listener.ConversationListener;
 import de.thoffbauer.signal4j.listener.SecurityExceptionListener;
@@ -28,7 +22,6 @@ import de.thoffbauer.signal4j.store.User;
 public class SignalBot implements ConversationListener, SecurityExceptionListener {
 
 	private static final String USER_AGENT = "signal-bot";
-	private static final String CONFIG_PATH = "config.json";
 
 	private Config config;
 	
@@ -44,7 +37,7 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 	
 	public SignalBot() {
 		try {
-			loadConfig();
+			config = Config.load();
 		} catch(IOException e) {
 			System.err.println("Could not load config! " + e.getMessage() + 
 					" (" + e.getClass().getSimpleName() + ")");
@@ -73,22 +66,6 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void loadConfig() throws IOException {
-		File configFile = new File(CONFIG_PATH);
-		if(!configFile.exists()) {
-			Files.copy(SignalBot.class.getResourceAsStream("defaultConfig.json"), configFile.toPath(), 
-					StandardCopyOption.REPLACE_EXISTING);
-		}
-		ObjectMapper mapper = new ObjectMapper();
-		config = mapper.readValue(configFile, Config.class);
-	}
-	
-	private void saveConfig() throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.enable(SerializationFeature.INDENT_OUTPUT);
-		mapper.writeValue(new File(CONFIG_PATH), config);
 	}
 
 	private void loadSignal() throws IOException {
@@ -172,12 +149,6 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 				+ "next(v for v in bot.plugins if type(v).__name__ == '" + firstUpperCase(plugin) + "')"
 						+ ".setEnabled(" + (enabled ? "True" : "False") + ")\n");
 		config.setEnabled(plugin, enabled);
-		try {
-			saveConfig();
-		} catch (IOException e) {
-			System.err.println("Could not save config! Changes will be lost: " + e.getMessage() +
-					" (" + e.getClass().getSimpleName() + ")");
-		}
 	}
 
 	@Override
