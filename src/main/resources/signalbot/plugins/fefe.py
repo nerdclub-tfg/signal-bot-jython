@@ -4,9 +4,14 @@ from de.nerdclubtfg.signalbot import SignalInterface as signal
 from signalbot.patternplugin import PatternPlugin
 
 from java.lang import String as jString
+from java.lang import ClassLoader
+from java.net import URL
+from java.security import KeyStore
+from java.util import Scanner as jScanner
+from javax.net.ssl import TrustManagerFactory, SSLContext
 
-import urllib2
 import re
+
 
 class Fefe(PatternPlugin):
     
@@ -22,9 +27,7 @@ class Fefe(PatternPlugin):
             return
         try:
             # download html
-            req = urllib2.Request('http://blog.fefe.de/?ts=%s' % param)
-            response = urllib2.urlopen(req)
-            html = response.read()
+            html = self.readHttps('https://blog.fefe.de/?ts=%s' % param)
             
             # find article
             queryStartIndex = self.queryStart.search(html).start()
@@ -42,9 +45,30 @@ class Fefe(PatternPlugin):
             text = text.replace('<blockquote>', '\n\n> ').replace('</blockquote>', '\n\n')
             
             # send response
-            signal.sendMessage(sender, group, jString(text, 'utf-8'))
+            signal.sendMessage(sender, group, text)
             # error handling
-        except urllib2.URLError as e:
+        except Exception as e:
+            print(e)
             signal.sendMessage(sender, group, 'Fehler: %s' % e.reason)
-        except urllib2.HTTPError as e:
-            signal.sendMessage(sender, group, 'Fehler: %s' % e.code)
+
+    def readHttps(self, url):
+        keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        trustStoreIn = ClassLoader.getSystemClassLoader().getResourceAsStream('fefe.keystore')
+        keyStore.load(trustStoreIn, jString('fefefe').toCharArray())
+        trustStoreIn.close()
+        
+        trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        trustManagerFactory.init(keyStore)
+        context = SSLContext.getInstance('TLS')
+        context.init(None, trustManagerFactory.getTrustManagers(), None)
+        
+        socketFactory = context.getSocketFactory()
+        
+        connection = URL(url).openConnection()
+        connection.setSSLSocketFactory(socketFactory)
+        connectionIn = connection.getInputStream()
+        
+        scan = jScanner(connectionIn, 'utf-8').useDelimiter('\\A')
+        html = scan.next() # reads whole stream
+        scan.close()
+        return html
