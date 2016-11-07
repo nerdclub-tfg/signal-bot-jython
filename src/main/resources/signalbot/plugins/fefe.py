@@ -49,8 +49,7 @@ class Fefe(PatternPlugin):
             signal.sendMessage(sender, group, text)
             # error handling
         except Exception as e:
-            print(e)
-            signal.sendMessage(sender, group, 'Fehler: %s' % e.reason)
+            signal.sendMessage(sender, group, 'Fehler: %s' % e)
 
     def initHttps(self):
         keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
