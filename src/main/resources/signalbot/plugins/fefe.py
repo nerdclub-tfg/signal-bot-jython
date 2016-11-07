@@ -7,7 +7,7 @@ from java.lang import String as jString
 from java.lang import ClassLoader
 from java.net import URL
 from java.security import KeyStore
-from java.util import Scanner as jScanner
+from java.util import Scanner
 from javax.net.ssl import TrustManagerFactory, SSLContext
 
 import re
@@ -19,6 +19,7 @@ class Fefe(PatternPlugin):
         PatternPlugin.__init__(self, enabled, '^!fefe .*')
         self.paramPattern = re.compile('[a-z0-9]{8}')
         self.queryStart = re.compile('<li><a href=\"\\?ts=[a-z0-9]{8}\">\\[l\\]</a>')
+        self.initHttps()
     
     def onMessage(self, sender, message, group):
         param = message.getBody().get()[6:]
@@ -51,7 +52,7 @@ class Fefe(PatternPlugin):
             print(e)
             signal.sendMessage(sender, group, 'Fehler: %s' % e.reason)
 
-    def readHttps(self, url):
+    def initHttps(self):
         keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
         trustStoreIn = ClassLoader.getSystemClassLoader().getResourceAsStream('fefe.keystore')
         keyStore.load(trustStoreIn, jString('fefefe').toCharArray())
@@ -62,13 +63,14 @@ class Fefe(PatternPlugin):
         context = SSLContext.getInstance('TLS')
         context.init(None, trustManagerFactory.getTrustManagers(), None)
         
-        socketFactory = context.getSocketFactory()
-        
+        self.socketFactory = context.getSocketFactory()
+
+    def readHttps(self, url):
         connection = URL(url).openConnection()
-        connection.setSSLSocketFactory(socketFactory)
+        connection.setSSLSocketFactory(self.socketFactory)
         connectionIn = connection.getInputStream()
         
-        scan = jScanner(connectionIn, 'utf-8').useDelimiter('\\A')
+        scan = Scanner(connectionIn, 'utf-8').useDelimiter('\\A')
         html = scan.next() # reads whole stream
         scan.close()
         return html
