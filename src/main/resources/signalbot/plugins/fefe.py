@@ -53,8 +53,8 @@ class Fefe(PatternPlugin):
 
     def initHttps(self):
         keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-        trustStoreIn = ClassLoader.getSystemClassLoader().getResourceAsStream('fefe.keystore')
-        keyStore.load(trustStoreIn, jString('fefefe').toCharArray())
+        trustStoreIn = ClassLoader.getSystemClassLoader().getResourceAsStream('isrgrootx1.keystore')
+        keyStore.load(trustStoreIn, jString('letsencrypt').toCharArray())
         trustStoreIn.close()
         
         trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
