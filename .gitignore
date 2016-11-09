@@ -18,3 +18,4 @@ attachments/
 
 # signal-bot (the project itself)
 config.json
+data/

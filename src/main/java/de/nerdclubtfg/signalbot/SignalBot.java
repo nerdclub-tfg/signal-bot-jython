@@ -50,6 +50,7 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 					" (" + e.getClass().getSimpleName() + ")");
 			return;
 		}
+		SignalInterface.set(signal, config, this);
 		try {
 			loadPlugins();
 		} catch (IOException e) {
@@ -57,7 +58,6 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 					" (" + e.getClass().getSimpleName() + ")");
 			return;
 		}
-		SignalInterface.set(signal, config, this);
 		System.out.println("Running");
 		try {
 			while(true) {
@@ -141,6 +141,7 @@ public class SignalBot implements ConversationListener, SecurityExceptionListene
 			}
 			sb.append("))\n");
 		}
+		sb.append("bot.init()\n");
 		python.exec(sb.toString());
 	}
 	
