@@ -21,11 +21,11 @@ public class SignalInterface {
 		SignalInterface.bot = bot;
 	}
 	
-	public static void sendMessage(User receiver, String body) throws IOException {
+	public synchronized static void sendMessage(User receiver, String body) throws IOException {
 		sendMessage(receiver, new SignalServiceDataMessage(System.currentTimeMillis(), body));
 	}
 
-	public static void sendMessage(User receiverA, Group receiverB, String body)
+	public synchronized static void sendMessage(User receiverA, Group receiverB, String body)
 			throws IOException {
 		SignalServiceDataMessage.Builder builder = SignalServiceDataMessage.newBuilder()
 				.withBody(body);
@@ -37,7 +37,12 @@ public class SignalInterface {
 		}
 	}
 	
-	private static void sendMessage(User receiver, SignalServiceDataMessage message) throws IOException {
+	public synchronized static void sendMessage(String receiver, String body) throws IOException{
+		SignalServiceDataMessage message = new SignalServiceDataMessage(System.currentTimeMillis(), body);
+		signal.sendMessage(receiver, message);
+	}
+	
+	private synchronized static void sendMessage(User receiver, SignalServiceDataMessage message) throws IOException {
 		signal.sendMessage(receiver.getNumber(), message);
 	}
 	
@@ -45,7 +50,7 @@ public class SignalInterface {
 		return config.isEnabled(plugin);
 	}
 	
-	public static void setEnabled(String plugin, boolean enabled) {
+	public synchronized static void setEnabled(String plugin, boolean enabled) {
 		bot.setEnabled(plugin, enabled);
 	}
 	
@@ -53,7 +58,7 @@ public class SignalInterface {
 		return config.isSudo(user.getNumber());
 	}
 	
-	public static void setSudo(User user, boolean sudo) {
+	public synchronized static void setSudo(User user, boolean sudo) {
 		config.setSudo(user.getNumber(), sudo);
 	}
 
